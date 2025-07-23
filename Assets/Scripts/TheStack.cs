@@ -57,7 +57,7 @@ public class TheStack : MonoBehaviour
     private const string BestScoreKey = "BestScore";
     private const string BestComboKey = "BestCombo";
 
-    private bool isGameOver = false;
+    private bool isGameOver = true;
     
     void Start()
     {
@@ -96,6 +96,7 @@ public class TheStack : MonoBehaviour
                 UpdateScore();
                 isGameOver = true;
                 GameOverEffect();
+                UIManager.Instance.SetScoreUI();
             }
         }
 
@@ -138,6 +139,8 @@ public class TheStack : MonoBehaviour
         lastBlock = newTrans;
 
         isMovingX = !isMovingX;
+        
+        UIManager.Instance.UpdateScore();
         
         return true;
     }
@@ -337,5 +340,37 @@ public class TheStack : MonoBehaviour
             rigid.AddForce(
                 (Vector3.up * Random.Range(0, 10f) + Vector3.right * (Random.Range(0, 10f) - 5f)) * 100f);
         }
+    }
+
+    public void Restart()
+    {
+        int childCount = transform.childCount;
+
+        for (int i = 0; i < childCount; i++)
+        {
+            Destroy(transform.GetChild(i).gameObject);
+        }
+
+        isGameOver = false;
+
+        lastBlock = null;
+        desiredPosition = Vector3.zero;
+        stackBounds = new Vector3(BoundSize, BoundSize);
+
+        stackCount = -1;
+        isMovingX = true;
+        blockTransition = 0f;
+        secondaryPosition = 0f;
+
+        comboCount = 0;
+        maxCombo = 0;
+        
+        prevBlockPosition = Vector3.down;
+
+        prevColor = GetRandomColor();
+        nextColor = GetRandomColor();
+
+        Spawn_Bloack();
+        Spawn_Bloack();
     }
 }
